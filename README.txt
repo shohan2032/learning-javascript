@@ -1,0 +1,1 @@
+Follow MDN for javascript documentation
