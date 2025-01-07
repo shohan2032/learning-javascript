@@ -1,13 +1,3 @@
-# Projects related to dom
-
-## project link
-[Click Here](https://stackblitz.com/~/github.com/shohan2032/Learning-JavaScript?file=06_projects/projectsset1.md)
-
-# Solution Code
-
-## Project 1
-
-```javascript
 const buttons = document.querySelectorAll('.button'); // returns a nodelist of all buttons
 const body = document.querySelector('body');
 
@@ -19,5 +9,3 @@ buttons.forEach((button) => {
         body.style.backgroundColor = event.target.id;
     })
 })
-
-```
