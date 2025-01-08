@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Learning Event</h1>
+    <button id="stop">Stop</button>
+</body>
+<script>
+    // 1 -> setTimeout. 
+    // 2 -> setTimeout is a function that takes two arguments. The first argument is a function and the second argument is the time in milliseconds.
+    // 3 -> setTimeout is a method that is used to run a function after a certain amount of time has passed.
+    // setTimeout(() => {
+    //     console.log("changing the value of h1")
+    // }, 2000);
+
+    const changeText = () => {
+        console.log("changing the value of h1");
+        document.querySelector("h1").innerHTML = "Learning setTimout";
+    }
+    const changeh1 = setTimeout(changeText,2000);
+
+    document.querySelector("#stop").addEventListener("click",() => {
+        clearTimeout(changeh1);
+        console.log("Stopped")
+    })
+     
+
+</script>
+</html>
