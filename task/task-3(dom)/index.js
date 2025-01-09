@@ -230,7 +230,9 @@ const registerUser = () => {
     registerButton.addEventListener('click', () => {
         const username = usernameInput.value.trim();
         const password = passwordInput.value.trim();
-        if (username && password) {
+        if(registered_user.has(username)) {
+            alert('Username already exists!');
+        } else if (username && password) {
             registered_user.set(username, password);
             user_valance.set(username, 0);
             tranjection_history.set(username, []);
@@ -290,7 +292,9 @@ const withdrawMoney = (username) => {
 const transferMoney = (username) => {
     const toUsername = prompt('Enter the username to transfer to:');
     const amount = prompt('Enter the amount to transfer:');
-    if (toUsername && amount &&!isNaN(amount) && amount > 0 && amount <= user_valance.get(username)) {
+    if(toUsername === username) {
+        alert('Cannot transfer to yourself!');
+    } else if (toUsername && amount && !isNaN(amount) && amount > 0 && amount <= user_valance.get(username)) {
         user_valance.set(username, user_valance.get(username) - parseFloat(amount));
         user_valance.set(toUsername, user_valance.get(toUsername) + parseFloat(amount));
         tranjection_history.get(username).unshift({
@@ -313,4 +317,10 @@ const transferMoney = (username) => {
 }
 
 loadFromLocalStorage();
-login();
+const currentUser = localStorage.getItem('currentUser');
+if (currentUser) {
+    startLogoutTimer(currentUser);
+    userInfo(currentUser);
+} else {
+    login();
+}
