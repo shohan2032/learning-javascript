@@ -246,7 +246,7 @@ const company = {
   company.countries.forEach(country => {
     departmentCountByCountry[country.name] = country.regions.reduce((acc, region) => {
       return acc + region.departments.length;
-    }, 0);
+    });
   });
   console.log("Number of departments and number of employees in each department group by country:", departmentCountByCountry);
 

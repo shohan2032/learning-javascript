@@ -656,7 +656,7 @@ const task = {
 
     //ascending order
     const lowerOrderFirst = [...medicines].sort((a,b)=> a[1]-b[1]);
-
+    console.log(medicines);
     console.log(lowerOrderFirst);
 
 

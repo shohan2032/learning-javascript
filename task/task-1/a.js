@@ -650,8 +650,8 @@ patients.forEach((patient) => {
                 console.log(`${patient.name}'s refill history:`);
                 refills.forEach((refillHistory)=>{
                     console.log(`date:${refillHistory.date}`)
-                    console.log(`date:${refillHistory.pharmacy}`)
-                    console.log(`date:${refillHistory.quantity}`)
+                    console.log(`pharmacy:${refillHistory.pharmacy}`)
+                    console.log(`quantity:${refillHistory.quantity}`)
                 })
             })
         }
