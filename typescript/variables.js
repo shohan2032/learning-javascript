@@ -10,3 +10,9 @@ console.log(age);
 // boolean
 var isLoggedIn = true;
 console.log(isLoggedIn);
+// any
+var hero;
+function getHero() {
+    return "hero";
+}
+hero = getHero();
