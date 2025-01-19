@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <button id="green">Green</button>
+    <button id="yellow">Yellow</button>
+</body>
+<script>
+    // lexical scoping -> https://developer.mozilla.org/en-US/docs/Web/JavaScript/Closures
+    function parent() {
+        let username = "shohan";
+        function child1() {
+            let propertyOfChild1 = "child1";
+            console.log(username);
+        }
+        function child2() {
+            // console.log(propertyOfChild1);
+            console.log(username);
+        }
+        child1();
+        child2();
+    }
+    parent();
+
+    // closure -> Functions that “remember” the variables from their lexical scope.
+    function makeFunc() {
+        const name = "Mozilla";
+        function displayName() {
+            console.log(name);
+        }
+        return displayName; // it will return the whole lexical scope.this is called closure
+    }
+    const myFunc = makeFunc();
+    myFunc();
+
+    // real life example of closure 
+    // document.getElementById('green').onclick = () => {
+    //     document.body.style.backgroundColor = "green";
+    // }
+
+    // document.getElementById('yellow').onclick = () => {
+    //     document.body.style.backgroundColor = "yellow";
+    // }
+
+    function changeColor(color) {
+        return function() {
+            document.body.style.backgroundColor = color;
+        }
+    }
+    document.getElementById('green').onclick = changeColor("green");
+    document.getElementById('yellow').onclick = changeColor("yellow");
+
+</script>
+</html>

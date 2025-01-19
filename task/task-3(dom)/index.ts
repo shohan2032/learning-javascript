@@ -1,4 +1,24 @@
-var tailwindClasses = {
+// Type definitions and interfaces
+interface TailwindClasses {
+    container: string;
+    card: string;
+    input: string;
+    buttonPrimary: string;
+    buttonSecondary: string;
+    header: string;
+    subHeader: string;
+    list: string;
+    listItem: string;
+}
+
+interface Transaction {
+    date: string;
+    amount: number;
+    type: 'credit' | 'debit';
+    user: string;
+}
+
+const tailwindClasses: TailwindClasses = {
     container: 'min-h-screen flex flex-col items-center justify-center bg-gradient-to-r from-blue-500 to-indigo-600 text-white',
     card: 'bg-white text-black rounded-lg shadow-lg p-6 w-full max-w-sm',
     input: 'w-full px-4 py-2 mt-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400',
@@ -9,37 +29,39 @@ var tailwindClasses = {
     list: 'mt-4 space-y-2',
     listItem: 'bg-gray-200 text-black p-3 rounded-lg shadow-sm',
 };
+
 // Utility functions for localStorage
-var saveToLocalStorage = function () {
+const saveToLocalStorage = (): void => {
     localStorage.setItem('registered_users', JSON.stringify(Array.from(registered_users)));
     localStorage.setItem('user_balances', JSON.stringify(Array.from(user_balances)));
     localStorage.setItem('transaction_history', JSON.stringify(Array.from(transaction_history)));
 };
-var loadFromLocalStorage = function () {
-    var savedUsers = localStorage.getItem('registered_users');
-    var savedBalances = localStorage.getItem('user_balances');
-    var savedHistory = localStorage.getItem('transaction_history');
+
+const loadFromLocalStorage = (): void => {
+    const savedUsers = localStorage.getItem('registered_users');
+    const savedBalances = localStorage.getItem('user_balances');
+    const savedHistory = localStorage.getItem('transaction_history');
+
     if (savedUsers) {
-        registered_users = new Map(JSON.parse(savedUsers));
-    }
-    else {
-        registered_users = new Map();
+        registered_users = new Map<string, string>(JSON.parse(savedUsers));
+    } else {
+        registered_users = new Map<string, string>();
         registered_users.set('shohan', '1234');
         registered_users.set('arman', '1234');
     }
+
     if (savedBalances) {
-        user_balances = new Map(JSON.parse(savedBalances));
-    }
-    else {
-        user_balances = new Map();
+        user_balances = new Map<string, number>(JSON.parse(savedBalances));
+    } else {
+        user_balances = new Map<string, number>();
         user_balances.set('shohan', 100);
         user_balances.set('arman', 500);
     }
+
     if (savedHistory) {
-        transaction_history = new Map(JSON.parse(savedHistory));
-    }
-    else {
-        transaction_history = new Map();
+        transaction_history = new Map<string, Transaction[]>(JSON.parse(savedHistory));
+    } else {
+        transaction_history = new Map<string, Transaction[]>();
         transaction_history.set('shohan', [
             {
                 date: new Date().toISOString(),
@@ -58,112 +80,135 @@ var loadFromLocalStorage = function () {
         ]);
     }
 };
-var registered_users;
-var user_balances;
-var transaction_history;
-var logoutTimer;
-var startLogoutTimer = function (username) {
+
+let registered_users: Map<string, string>;
+let user_balances: Map<string, number>;
+let transaction_history: Map<string, Transaction[]>;
+let logoutTimer: number;
+
+const startLogoutTimer = (username: string): void => {
     clearTimeout(logoutTimer);
-    logoutTimer = window.setTimeout(function () {
+    logoutTimer = window.setTimeout(() => {
         alert('Session expired. Please login again.');
         localStorage.removeItem('currentUser');
         main.innerHTML = '';
         login();
     }, 2 * 60 * 1000);
 };
-var resetLogoutTimer = function (username) {
+
+const resetLogoutTimer = (username: string): void => {
     clearTimeout(logoutTimer);
     startLogoutTimer(username);
 };
-var main = document.querySelector('#main');
+
+const main: HTMLElement = document.querySelector('#main')!;
+
 // Function to render login screen
-var login = function () {
+const login = (): void => {
     main.className = tailwindClasses.container;
-    var card = document.createElement('div');
+
+    const card = document.createElement('div');
     card.className = tailwindClasses.card;
-    var header = document.createElement('h1');
+
+    const header = document.createElement('h1');
     header.className = tailwindClasses.header;
     header.innerText = 'Login';
-    var loginInput = document.createElement('input');
+
+    const loginInput = document.createElement('input');
     loginInput.type = 'text';
     loginInput.id = 'login';
     loginInput.placeholder = 'Enter Your Username';
     loginInput.className = tailwindClasses.input;
-    var passwordInput = document.createElement('input');
+
+    const passwordInput = document.createElement('input');
     passwordInput.type = 'password';
     passwordInput.id = 'password';
     passwordInput.placeholder = 'Enter Your Password';
     passwordInput.className = tailwindClasses.input;
-    var submitButton = document.createElement('button');
+
+    const submitButton = document.createElement('button');
     submitButton.id = 'submit';
     submitButton.className = tailwindClasses.buttonPrimary;
     submitButton.innerText = 'Login';
-    var registerButton = document.createElement('button');
+
+    const registerButton = document.createElement('button');
     registerButton.id = 'register';
     registerButton.className = tailwindClasses.buttonSecondary;
     registerButton.innerText = 'Register';
+
     card.appendChild(header);
     card.appendChild(loginInput);
     card.appendChild(passwordInput);
     card.appendChild(submitButton);
     card.appendChild(registerButton);
+
     main.innerHTML = '';
     main.appendChild(card);
-    document.querySelector('#submit').addEventListener('click', function () {
-        var username = loginInput.value.trim();
-        var password = passwordInput.value.trim();
+
+    document.querySelector('#submit')!.addEventListener('click', () => {
+        const username = loginInput.value.trim();
+        const password = passwordInput.value.trim();
         if (registered_users.has(username) && registered_users.get(username) === password) {
             localStorage.setItem('currentUser', username);
             startLogoutTimer(username);
             userInfo(username);
-        }
-        else {
+        } else {
             alert('Invalid username or password.');
         }
     });
-    document.querySelector('#register').addEventListener('click', registerUser);
+
+    document.querySelector('#register')!.addEventListener('click', registerUser);
 };
+
 // Function to show user info
-var userInfo = function (username) {
-    var _a;
+const userInfo = (username: string): void => {
     resetLogoutTimer(username);
     main.className = tailwindClasses.container;
-    var card = document.createElement('div');
+
+    const card = document.createElement('div');
     card.className = tailwindClasses.card;
-    var header = document.createElement('h1');
+
+    const header = document.createElement('h1');
     header.className = tailwindClasses.header;
-    header.innerText = "Welcome, ".concat(username);
-    var balanceInfo = document.createElement('p');
+    header.innerText = `Welcome, ${username}`;
+
+    const balanceInfo = document.createElement('p');
     balanceInfo.className = tailwindClasses.subHeader;
-    balanceInfo.innerText = "Your balance: $".concat(user_balances.get(username));
-    var depositButton = document.createElement('button');
+    balanceInfo.innerText = `Your balance: $${user_balances.get(username)}`;
+
+    const depositButton = document.createElement('button');
     depositButton.className = tailwindClasses.buttonPrimary;
     depositButton.innerText = 'Deposit Money';
-    depositButton.addEventListener('click', function () { return depositMoney(username); });
-    var withdrawButton = document.createElement('button');
+    depositButton.addEventListener('click', () => depositMoney(username));
+
+    const withdrawButton = document.createElement('button');
     withdrawButton.className = tailwindClasses.buttonSecondary;
     withdrawButton.innerText = 'Withdraw Money';
-    withdrawButton.addEventListener('click', function () { return withdrawMoney(username); });
-    var transferButton = document.createElement('button');
+    withdrawButton.addEventListener('click', () => withdrawMoney(username));
+
+    const transferButton = document.createElement('button');
     transferButton.className = tailwindClasses.buttonPrimary;
     transferButton.innerText = 'Transfer Money';
-    transferButton.addEventListener('click', function () { return transferMoney(username); });
-    var logoutButton = document.createElement('button');
+    transferButton.addEventListener('click', () => transferMoney(username));
+
+    const logoutButton = document.createElement('button');
     logoutButton.className = tailwindClasses.buttonSecondary;
     logoutButton.innerText = 'Logout';
-    logoutButton.addEventListener('click', function () {
+    logoutButton.addEventListener('click', () => {
         clearTimeout(logoutTimer);
         localStorage.removeItem('currentUser');
         login();
     });
-    var transactionList = document.createElement('div');
+
+    const transactionList = document.createElement('div');
     transactionList.className = tailwindClasses.list;
-    (_a = transaction_history.get(username)) === null || _a === void 0 ? void 0 : _a.slice(0, 5).forEach(function (entry) {
-        var item = document.createElement('div');
+    transaction_history.get(username)?.slice(0, 5).forEach((entry) => {
+        const item = document.createElement('div');
         item.className = tailwindClasses.listItem;
-        item.innerText = "Date: ".concat(new Date(entry.date).toLocaleString(), ", Amount: ").concat(entry.amount, ", Type: ").concat(entry.type, ", Account: ").concat(entry.user);
+        item.innerText = `Date: ${new Date(entry.date).toLocaleString()}, Amount: ${entry.amount}, Type: ${entry.type}, Account: ${entry.user}`;
         transactionList.appendChild(item);
     });
+
     card.appendChild(header);
     card.appendChild(balanceInfo);
     card.appendChild(depositButton);
@@ -171,62 +216,70 @@ var userInfo = function (username) {
     card.appendChild(transferButton);
     card.appendChild(logoutButton);
     card.appendChild(transactionList);
+
     main.innerHTML = '';
     main.appendChild(card);
 };
+
 // Register user function
-var registerUser = function () {
+const registerUser = (): void => {
     main.className = tailwindClasses.container;
-    var card = document.createElement('div');
+
+    const card = document.createElement('div');
     card.className = tailwindClasses.card;
-    var header = document.createElement('h1');
+
+    const header = document.createElement('h1');
     header.className = tailwindClasses.header;
     header.innerText = 'Register';
-    var usernameInput = document.createElement('input');
+
+    const usernameInput = document.createElement('input');
     usernameInput.type = 'text';
     usernameInput.id = 'username';
     usernameInput.placeholder = 'Enter New Username';
     usernameInput.className = tailwindClasses.input;
-    var passwordInput = document.createElement('input');
+
+    const passwordInput = document.createElement('input');
     passwordInput.type = 'password';
     passwordInput.id = 'password';
     passwordInput.placeholder = 'Enter New Password';
     passwordInput.className = tailwindClasses.input;
-    var registerButton = document.createElement('button');
+
+    const registerButton = document.createElement('button');
     registerButton.className = tailwindClasses.buttonPrimary;
     registerButton.innerText = 'Register';
-    registerButton.addEventListener('click', function () {
-        var username = usernameInput.value.trim();
-        var password = passwordInput.value.trim();
+    registerButton.addEventListener('click', () => {
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value.trim();
         if (registered_users.has(username)) {
             alert('Username already exists!');
-        }
-        else if (username && password) {
+        } else if (username && password) {
             registered_users.set(username, password);
             user_balances.set(username, 0);
             transaction_history.set(username, []);
             saveToLocalStorage();
             alert('Registration successful! Please login.');
             login();
-        }
-        else {
+        } else {
             alert('Both fields are required!');
         }
     });
+
     card.appendChild(header);
     card.appendChild(usernameInput);
     card.appendChild(passwordInput);
     card.appendChild(registerButton);
+
     main.innerHTML = '';
     main.appendChild(card);
 };
+
 // Deposit money function
-var depositMoney = function (username) {
-    var amount = prompt('Enter the amount to deposit:');
+const depositMoney = (username: string): void => {
+    const amount = prompt('Enter the amount to deposit:');
     if (amount && !isNaN(Number(amount)) && Number(amount) > 0) {
-        var numAmount = parseFloat(amount);
+        const numAmount = parseFloat(amount);
         user_balances.set(username, (user_balances.get(username) || 0) + numAmount);
-        var transactions = transaction_history.get(username) || [];
+        const transactions = transaction_history.get(username) || [];
         transactions.unshift({
             date: new Date().toISOString(),
             amount: numAmount,
@@ -236,19 +289,19 @@ var depositMoney = function (username) {
         alert('Successfully deposit');
         saveToLocalStorage();
         userInfo(username);
-    }
-    else {
+    } else {
         alert('Invalid amount!');
     }
 };
+
 // Withdraw money function
-var withdrawMoney = function (username) {
-    var amount = prompt('Enter the amount to withdraw:');
-    var currentBalance = user_balances.get(username) || 0;
+const withdrawMoney = (username: string): void => {
+    const amount = prompt('Enter the amount to withdraw:');
+    const currentBalance = user_balances.get(username) || 0;
     if (amount && !isNaN(Number(amount)) && Number(amount) > 0 && Number(amount) <= currentBalance) {
-        var numAmount = parseFloat(amount);
+        const numAmount = parseFloat(amount);
         user_balances.set(username, currentBalance - numAmount);
-        var transactions = transaction_history.get(username) || [];
+        const transactions = transaction_history.get(username) || [];
         transactions.unshift({
             date: new Date().toISOString(),
             amount: numAmount,
@@ -258,55 +311,61 @@ var withdrawMoney = function (username) {
         alert('Successfully withdraw');
         saveToLocalStorage();
         userInfo(username);
-    }
-    else {
+    } else {
         alert('Invalid or insufficient amount!');
     }
 };
-var transferMoney = function (username) {
-    var toUsername = prompt('Enter the username to transfer to:');
-    var amount = prompt('Enter the amount to transfer:');
-    var currentBalance = user_balances.get(username) || 0;
+
+const transferMoney = (username: string): void => {
+    const toUsername = prompt('Enter the username to transfer to:');
+    const amount = prompt('Enter the amount to transfer:');
+    const currentBalance = user_balances.get(username) || 0;
+    
     if (!toUsername || toUsername === username) {
         alert('Cannot transfer to yourself!');
         return;
     }
+    
     if (!registered_users.has(toUsername)) {
         alert('User does not exist!');
         return;
     }
+    
     if (amount && !isNaN(Number(amount)) && Number(amount) > 0 && Number(amount) <= currentBalance) {
-        var numAmount = parseFloat(amount);
+        const numAmount = parseFloat(amount);
         user_balances.set(username, currentBalance - numAmount);
         user_balances.set(toUsername, (user_balances.get(toUsername) || 0) + numAmount);
-        var senderTransactions = transaction_history.get(username) || [];
-        var receiverTransactions = transaction_history.get(toUsername) || [];
+        
+        const senderTransactions = transaction_history.get(username) || [];
+        const receiverTransactions = transaction_history.get(toUsername) || [];
+        
         senderTransactions.unshift({
             date: new Date().toISOString(),
             amount: numAmount,
             type: 'debit',
             user: toUsername,
         });
+        
         receiverTransactions.unshift({
             date: new Date().toISOString(),
             amount: numAmount,
             type: 'credit',
             user: username,
         });
+        
         alert('Transaction Successful');
         saveToLocalStorage();
         userInfo(username);
-    }
-    else {
+    } else {
         alert('Invalid or insufficient amount!');
     }
 };
+
 loadFromLocalStorage();
-var currentUser = localStorage.getItem('currentUser');
+const currentUser = localStorage.getItem('currentUser');
 if (currentUser) {
     startLogoutTimer(currentUser);
     userInfo(currentUser);
-}
-else {
+} else {
     login();
 }
